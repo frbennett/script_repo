@@ -1,0 +1,73 @@
+site_name: ShapleyX Documentation
+site_url: https://frbennett.github.io/shapleyx/
+repo_url: https://github.com/frbennett/shapleyx
+
+theme:
+  name: readthedocs
+  features:
+    - navigation.tabs
+    - navigation.indexes
+    - navigation.sections
+    - navigation.top
+    - toc.integrate
+    - content.tabs.link
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+plugins:
+  - search
+  - mkdocs-jupyter:
+     ignore_h1_titles: False
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_root_heading: true
+            show_source: true
+            heading_level: 3
+            merge_init_into_class: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Quickstart: getting-started/quickstart.md
+  - Tutorials:
+    - Basic Usage: tutorials/basic-usage.md
+    - Example Workflow: tutorials/owen_product_function.ipynb
+  - How-to Guides:
+    - Common Tasks: how-to-guides/common-tasks.md
+  - Reference:
+    - API: reference/api.md
+    - ARD: reference/ard.md
+  - Explanation:
+    - Theory: explanation/theory.md
+    - ARD Theory : explanation/ard_theory.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.emoji
+  - pymdownx.tabbed
+  - pymdownx.snippets
+  - attr_list
+  - pymdownx.arithmatex:
+      generic: true
+
+
+extra_javascript:
+  - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML
