@@ -53,4 +53,6 @@ markdown_extensions:
       generic: true
 
 extra_javascript:
+  - https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.0/jszip.min.js
+  - js/handleGitHubAction.js
   - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML
