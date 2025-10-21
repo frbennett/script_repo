@@ -1,0 +1,85 @@
+ 
+> ## <strong style="color:#00b8d4; font-size:28px;">AI Script Summary</strong>
+> <span style="color:#757575; font-size:18px; display:block; margin-top:1px;">This notebook develops a Python tool for automating AI-driven summarization of Jupyter notebooks using OpenRouter's OpenAI-compatible API, parsing .ipynb files to extract code, markdown, and outputs into prompts for structured analyses. It includes a NotebookSummarizer class for conversational interactions with history management, demonstrates self-summarization, and provides offline prompt generation, enhancing documentation with admonition notes and HTML templates for interactive GitHub integration. The framework streamlines creating professional overviews for data science scripts, supporting follow-up queries while maintaining context.</span> <br/><br/>
+> <strong>Authors:</strong> F. R. Bennett &nbsp;&nbsp; <br/><br/>
+> <strong>Date:</strong> 17/10/25  &nbsp;&nbsp; <br/><br/>
+> <strong>Version:</strong> 1.0<br/><br/>
+> 
+> <button onclick="handleGitHubAction('frbennett', 'shapleyx', 'Examples/ishigami_new_legendre.ipynb', 'download')">Download File</button>
+> 
+><button onclick="handleGitHubAction('frbennett', 'shapleyx', 'Examples', 'download')">Download Folder</button>
+>
+><button onclick="handleGitHubAction('frbennett', 'shapleyx', 'Examples/ishigami_new_legendre.ipynb', 'open')">Open on GitHub</button>
+> <br/><br/>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.0/jszip.min.js"></script>
+<script>
+async function handleGitHubAction(owner, repo, path, action) {
+  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+  const githubUrl = `https://github.com/${owner}/${repo}/tree/main/${path}`;
+
+  if (action === 'open') {
+    window.open(githubUrl, '_blank');
+    return;
+  }
+
+  const response = await fetch(apiUrl);
+  const data = await response.json();
+
+  if (Array.isArray(data)) {
+    // Directory download
+    const zip = new JSZip();
+    for (const file of data) {
+      if (file.type === "file") {
+        const fileRes = await fetch(file.download_url);
+        const content = await fileRes.text();
+        zip.file(file.name, content);
+      }
+    }
+    const blob = await zip.generateAsync({ type: "blob" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `${path.split('/').pop()}.zip`;
+    link.click();
+  } else if (data.type === "file") {
+    // Single file download
+    const decoded = atob(data.content.replace(/\n/g, ''));
+    const blob = new Blob([decoded], { type: 'application/octet-stream' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = data.name;
+    link.click();
+  } else {
+    alert("Unsupported content type or path not found.");
+  }
+}
+</script>
+# Detailed Summary
+---
+## 1. The main purpose and objectives of the notebook
+
+This notebook develops and demonstrates a Python-based tool for automating the summarization of Jupyter notebooks using AI, specifically through an OpenAI-compatible API via OpenRouter. Its primary purpose is to enable users to parse notebook files, extract content from code, markdown, and output cells, and generate structured summaries or brief descriptions that can be integrated into documentation, HTML snippets, or follow-up analyses. Objectives include improving notebook documentation with admonition notes for better readability, supporting conversational AI interactions to maintain context across queries, providing an offline prompt-building alternative, and facilitating self-referential testing by summarizing the notebook itself. Overall, it aims to streamline the process of creating professional overviews for data science scripts in repositories, enhancing accessibility and reusability without manual effort.
+
+## 2. Key code logic and functions implemented
+
+The notebook imports essential libraries such as openai for API access, IPython.display for rendering Markdown, pyperclip for clipboard operations, os and requests for file handling, and nbformat for notebook parsing. It defines read_notebook, which opens a .ipynb file and parses it into a NotebookNode object using nbformat.read with UTF-8 encoding. The extract_content function loops through notebook cells: for code cells, it appends the source prefixed by "# Code cell:", adds stream outputs as "# Output:" and execution results as "# Result:" if available; for markdown cells, it appends the source prefixed by "# Markdown:", then joins all parts into a single string. The NotebookSummarizer class initializes an OpenAI client configured for OpenRouter with a specified model and max_history limit, starts a conversation history with a system prompt defining the AI as a notebook summarization expert, and manages message persistence. Its initial_summarize method copies the input prompt to the clipboard, appends it as a user message to history, and invokes _get_response to call the API. The follow_up method appends a query as a user message, trims excess history by removing the oldest user-assistant pairs while retaining the system prompt, and retrieves a response. The private _get_response method submits the history to chat.completions.create with optional headers and a high max_tokens value, extracts the assistant's content (with fallback checks), appends it to history, and handles exceptions like API failures. Prompt templates include prompt_prefix for guiding comprehensive, heading-structured summaries with LaTeX instructions, and definition_text for generating short 2-3 line overviews to insert into an HTML snippet with GitHub download buttons using JSZip for zipping directories. The summarise_this function orchestrates usage by validating the API key and file path, reading and extracting notebook content, building a prefixed prompt, instantiating the summarizer, generating an initial summary, following up for a definition response, and returning both. Additional code cells demonstrate execution on the notebook itself, composing results for display via Markdown and clipboard copying, with an offline variant that builds and copies the prompt without API calls.
+
+## 3. Important findings or results shown in outputs
+
+Outputs primarily showcase the tool's self-application, with console messages confirming "Reading notebook..." and "Extracting content..." phases. The core result is an IPython Markdown object rendering a composed summary: it begins with an HTML-formatted "AI Script Summary" block inserting a 3-line AI-generated brief describing the notebook as an AI tool for content extraction and summarization with admonition enhancements, followed by a detailed, heading-organized analysis mirroring the requested structure. This self-summary validates the pipeline's efficacy, producing coherent, context-aware outputs that blend brief overviews with in-depth breakdowns, including admonition explanations and prompt templates. A follow-up output displays the populated HTML snippet with styled authorship, date, version, and interactive GitHub buttons for file/folder downloads or opening, powered by JavaScript fetching from the GitHub API and JSZip for zipping. The offline option copies a ready-to-paste prompt, enabling manual AI interaction, while the notebook's embedded example result from a Grok chatbot reiterates the structured summary, confirming cross-model compatibility. No quantitative findings emerge, but the outputs highlight the tool's robustness in generating professional, clipboard-ready documentation.
+
+## 4. Overall structure and flow
+
+The notebook opens with markdown introducing admonition notes, explaining their role in highlighting information, issuing warnings, and structuring content, referencing tools like MyST-Markdown and Jupyter Book. It transitions to libraries import, followed by a markdown overview of processing functions and the NotebookSummarizer class. Code cells implement read_notebook, extract_content, and the class with its methods, emphasizing history management and API resilience. Subsequent markdown describes prompt_prefix for detailed summaries and definition_text for HTML briefs, accompanied by admonition examples. The summarise_this function is defined, then demonstrated in a code cell targeting the notebook itself, using a Grok model to generate and display results via Markdown display and pyperclip copying. An offline section mirrors this flow without API calls, copying prompts directly. Admonition blocks intersperse explanations, culminating in further copying utilities and a final formatted HTML output. The flow progresses logically from conceptual foundations and admonition rationale, through implementation, prompt design, and demonstration, to practical extensions like offline use and result composition, ensuring a tutorial-like progression for users.
+
+## 5. Instructions for use
+
+Set the environment variable OPENROUTER_API_KEY with a valid OpenRouter API key to enable online summarization; without it, use the offline prompt-copying mode. Specify the path to a target .ipynb file in the NOTEBOOK_PATH variable or as an argument to summarise_this, optionally customizing the model (e.g., "x-ai/grok-4-fast" or "google/gemini-2.5-flash-lite"). Run cells sequentially: imports first, then function definitions, prompt setups, and the demonstration cell to process the notebook, generate summaries, and output results as Markdown with clipboard copies. For conversational depth, instantiate NotebookSummarizer separately and chain initial_summarize with follow_up calls for queries like method explanations, adjusting max_history for longer contexts. In offline mode, execute the extraction code to copy a pre-built prompt to the clipboard, then paste it into an AI chatbot interface. Adapt the HTML in definition_text for custom repositories by updating GitHub owner/repo paths and button actions. Test on the notebook itself for validation, and integrate outputs into markdown documents or web pages for documentation; ensure JSZip library loads for HTML button functionality in rendered environments.
+
+## 6. Theoretical Description of Methods
+
+The approach centers on programmatic parsing of Jupyter notebooks as JSON-structured documents via nbformat, which decomposes content into typed cells (code for executable Python with outputs, markdown for formatted text), allowing systematic extraction that captures semantic layers like code intent, textual explanations, and runtime results without execution. This extraction concatenates elements with descriptive delimiters to form a linear prompt suitable for large language models, which process it through transformer-based architectures to infer high-level themes, logic flows, and implications. The conversational wrapper employs a message history simulating multi-turn dialogue, with token-efficient trimming to sustain context akin to memory-augmented reasoning, preventing dilution from irrelevant prior exchanges while anchoring to an expert system prompt. Prompt engineering structures outputs via explicit headings and constraints (e.g., LaTeX for equations, list avoidance), leveraging the model's generative capabilities for synthesized summaries that emulate human analysis. Follow-up mechanisms build on this by injecting queries into the latent context, enabling iterative refinement without restarting, grounded in natural language understanding principles. The offline variant decouples parsing from inference, treating extraction as a preprocessing step for external LLMs, while HTML integration applies templating for reproducible, interactive outputs, drawing from web development patterns for dynamic content delivery.
+
+No web references were used in this summary.
+
+An interesting and possibly relevant fact: Admonition blocks in Jupyter, inspired by reStructuredText, enhance accessibility by providing visual cues similar to how screen readers interpret semantic HTML elements, improving usability for diverse audiences in technical documentation. [Reference: Jupyter Book Documentation on Admonitions, https://jupyterbook.org/content/metadata.html#admonitions]
