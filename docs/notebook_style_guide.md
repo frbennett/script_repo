@@ -1,6 +1,6 @@
 # Notebook Presentation Style Guide
 
-This style guide is derived from the presentation style used in the `ai_script_summary.ipynb` notebook located at [scripts/utilities/ai_script_summary.ipynb](scripts/utilities/ai_script_summary.ipynb). It serves as a template for structuring Jupyter notebooks in the repository to ensure consistency, readability, and professional documentation. The goal is to make notebooks self-explanatory, educational, and easy to follow, blending explanatory Markdown, well-documented code, visual callouts (admonitions), and practical demonstrations.
+This style guide is derived from the presentation style used in the `ai_script_summary.ipynb` notebook located at scripts/utilities/ai_script_summary. It serves as a template for structuring Jupyter notebooks in the repository to ensure consistency, readability, and professional documentation. The goal is to make notebooks self-explanatory, educational, and easy to follow, blending explanatory Markdown, well-documented code, visual callouts (admonitions), and practical demonstrations.
 
 Adopt this style for all new notebooks, especially those involving data processing, AI integrations, or utility scripts. It emphasizes clear sectioning, rationale explanations, code with docstrings, and interactive examples.
 
